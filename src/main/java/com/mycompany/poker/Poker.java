@@ -16,5 +16,6 @@ public class Poker {
          System.out.println("hola 2");
          System.out.println("hola soy adrian");
          System.out.println("hola soy adrian");
+         System.out.println("hola lorite es todo feo");
     }
 }
