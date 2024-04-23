@@ -4,36 +4,68 @@
  */
 package com.mycompany.poker;
 
+import java.awt.BorderLayout;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 /**
  *
  * @author Usuario
  */
+
 public class Servidor {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        final int NUM_CLIENTES_ESPERADOS = 6;
-        int clientesConectados = 0;
-        try{
-            ServerSocket servidor = new ServerSocket(50987);
-            while(clientesConectados < NUM_CLIENTES_ESPERADOS){
-                Socket cliente = servidor.accept(); 
-                clientesConectados++;
-                System.out.println("Cliente " + clientesConectados + "conectado");
-                
+        MarcoServidor mimarco = new MarcoServidor();
+        mimarco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+}
+
+class MarcoServidor extends JFrame implements Runnable {
+
+    private JTextArea areatexto;
+
+    public MarcoServidor() {
+        setBounds(1200, 300, 280, 350);
+        JPanel milamina = new JPanel();
+        milamina.setLayout(new BorderLayout());
+        areatexto = new JTextArea();
+        milamina.add(areatexto, BorderLayout.CENTER);
+        add(milamina);
+        setVisible(true);
+        Thread mihilo = new Thread(this);
+        mihilo.start();
+    }
+
+    @Override
+    public void run() {
+        try {
+             final int NUM_CLIENTES =6;
+             int clientes = 0;
+            ServerSocket servidor = new ServerSocket(4444);
+           
+           
+            while (clientes<=NUM_CLIENTES) {
+                        
+                        clientes++;
+                        DataInputStream entrada = new DataInputStream(s.getInputStream());
+                        String mensaje = entrada.readUTF();
+                        System.out.println(mensaje);
+        //            areatexto.append("\n" + mensaje);
+                        areatexto.append("Se conencta el cliente  "+mensaje+ "\n");
+                        
+                        
             }
-            System.out.println("La partida va a comenzar. Estan todos los jugadores.");
-        }catch(IOException e){
-            System.err.println("IOException. Mensaje: " + e.getMessage());
-            e.printStackTrace(System.err);
-            System.exit(1);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(MarcoServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }
