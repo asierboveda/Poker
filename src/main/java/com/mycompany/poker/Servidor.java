@@ -52,7 +52,8 @@ class MarcoServidor extends JFrame implements Runnable {
             ServerSocket servidor = new ServerSocket(4444);
            
            
-            while (clientes<=NUM_CLIENTES) {
+            while (true) {
+                        Socket s = servidor.accept();
                         
                         clientes++;
                         DataInputStream entrada = new DataInputStream(s.getInputStream());
