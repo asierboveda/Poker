@@ -1,78 +1,78 @@
-
 package com.mycompany.poker;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Scanner;
 
 public class ServidorMikel {
-    
-    private static final int NUM_JUGADORES=5;
-    
+
+    private static final int NUM_JUGADORES = 5;
+
     public static void main(String[] args) {
-        //al poenrlo en el try no hace falta cerrar
-        try(ServerSocket servidor = new ServerSocket(50678);){
+        try (ServerSocket servidor = new ServerSocket(50678)) {
+
+            Socket[] clientes = new Socket[NUM_JUGADORES];
             
-            //se guardan los clientes pa un futuro hacer cosas cn ellos
-            Socket clientes [] = new Socket[NUM_JUGADORES];
-            //los inicializo pa poder hacer close al final
-            Socket c1=null;Socket c2=null;Socket c3=null;Socket c4=null;Socket c5=null;
-            
-            int i=1;
-            while(i<=NUM_JUGADORES){
+            for (int i = 0; i < NUM_JUGADORES; i++) {
                 System.out.println("Servidor esperando al siguiente jugador...");
-                System.out.println("Conectados "+(i-1)+" / "+ 5+"....");
-                
-                switch(i){
-                    case 1:
-                        c1=servidor.accept();
-                        System.out.println("Jugador 1 conectado al servidor");//aviso de que se ha conectado
-                        clientes[i-1]=c1;//añado
-                        break;
-                    case 2:
-                        c2=servidor.accept();
-                        clientes[i-1]=c2;
-                        System.out.println("Jugador 2 conectado al servidor");
-                        break;
-                    case 3:
-                        c3=servidor.accept();
-                        clientes[i-1]=c3;
-                        System.out.println("Jugador 3 conectado al servidor");
-                        break;
-                    case 4:
-                        c4=servidor.accept();
-                        clientes[i-1]=c4;
-                        System.out.println("Jugador 4 conectado al servidor");
-                        break;
-                    case 5:
-                        c5=servidor.accept();
-                        clientes[i-1]=c5;
-                        System.out.println("Jugador 5 conectado al servidor");
-                        break;
+                System.out.println("Conectados " + i + " / " + NUM_JUGADORES);
+
+                // Acepta la conexión del cliente
+                clientes[i] = servidor.accept();
+                System.out.println("Jugador " + (i + 1) + " conectado al servidor");
+            }
+
+            Random random = new Random();
+
+            // Genera las cartas comunes
+            int[] cartasMedio = {
+                random.nextInt(1, 14),
+                random.nextInt(1, 14),
+                random.nextInt(1, 14),
+                random.nextInt(1, 14),
+                random.nextInt(1, 14)
+            };
+
+            // Envía las cartas comunes y propias a cada jugador
+            for (Socket cliente : clientes) {
+                try (PrintWriter out = new PrintWriter(cliente.getOutputStream(), true)) {
+                    
+                    for (int carta : cartasMedio) {
+                        out.println(carta);
+                    }
+                    
+                    out.println(random.nextInt(1, 14)); // Primera carta propia
+                    out.println(random.nextInt(1, 14)); // Segunda carta propia
                 }
-                
-                i++;
-                
             }
             
-            //leo lo que han mandado los clientes
-            for(int j=1; j<=NUM_JUGADORES;j++){
-                try(Scanner in = new Scanner(clientes[j-1].getInputStream())){
-                    if(in.hasNext()){
-                        int apuestLeida = in.nextInt();
-                        System.out.println("El jugador "+j+" apostó "+apuestLeida);
+            Scanner teclado = new Scanner(System.in);
+            System.out.print("Estan todas las apuestas?: ");
+            String resp=teclado.nextLine();
+            
+            System.out.print("Teclea pa continuar cuando todos los clientes hayan apostado: ");
+            teclado.nextLine();
+            
+            // Lee las apuestas de cada jugador
+            for (int j = 0; j < NUM_JUGADORES; j++) {
+                try (Scanner in = new Scanner(clientes[j].getInputStream())) {
+                    if (in.hasNextInt()) { // Verifica si hay un entero para leer
+                        int apuesta = in.nextInt();
+                        System.out.println("El jugador " + (j + 1) + " apostó: " + apuesta);
                     }
                 }
             }
             
-            //cierro xq los clientes ya han terminado
-            c1.close();c2.close();c3.close();c4.close();c5.close();
-            
-            
-        }catch (IOException excepcion) {
-                System.err.println("error");
+            // Cierra los sockets al final
+            for (Socket cliente : clientes) {
+                cliente.close(); // Cierra cada socket
+            }
+
+        } catch (IOException excepcion) {
+            excepcion.printStackTrace(); // Muestra información del error
         }
     }
-    
 }
