@@ -17,27 +17,31 @@ import java.net.Socket;
  */
 public class Servidor3EnRaya {
 
-    private static final int PUERTO = 4554;
+    /**
+     * @param args the command line arguments
+     */
+    private static final int PUERTO = 34450;
     private static int turno = 1;
-    private static char[][] tablero = new char[3][3];
+    private static final char[][] tablero = new char[3][3];
 
     public static void main(String[] args) {
         try {
             ServerSocket servidor = new ServerSocket(PUERTO);
             System.out.println("Servidor esperando conexiones...");
 
-            while (true) {
-                Socket clienteX = servidor.accept();
-                System.out.println("Jugador X conectado desde: " + clienteX.getInetAddress().getHostName());
+            //(samu) he quitado el while para que no deje crear mas sockets y solo espere dos jugadores
+            //luego los print de que el jugador se ha conectado los he puesto dentro de juego porque sino no funcionaba correctamente. Ponia en el servidor que se habia conectado pero no se comunicaba con el cliente todavia.
+            //while (true) {
+            Socket clienteX = servidor.accept();
+            new Thread(new Juego(clienteX, 'X')).start();
 
-                Socket clienteO = servidor.accept();
-                System.out.println("Jugador O conectado desde: " + clienteO.getInetAddress().getHostName());
+            Socket clienteO = servidor.accept();
+            new Thread(new Juego(clienteO, 'O')).start();
 
-                new Thread(new Juego(clienteX, 'X')).start();
-                new Thread(new Juego(clienteO, 'O')).start();
-            }
+            //}
         } catch (IOException e) {
             e.printStackTrace();
+
         }
     }
 
@@ -80,10 +84,17 @@ public class Servidor3EnRaya {
         @Override
         public void run() {
             try {
+                System.out.println("Jugador " + marca + " conectado desde: " + cliente.getInetAddress().getHostName());
+
                 BufferedReader in = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
                 PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
 
-                out.println("Esperando a que el otro jugador se una...");
+                out.println(marca); //(samu)para que le diga que jugador es de forma correcta
+                if (marca == 'X') {
+                    out.println("Esperando a que el otro jugador se una...");
+                } else {
+                    out.println("SIGUE");
+                }
 
                 int miTurno = getTurno();
 
@@ -115,6 +126,7 @@ public class Servidor3EnRaya {
                 cliente.close();
             } catch (IOException e) {
                 e.printStackTrace();
+
             }
         }
     }

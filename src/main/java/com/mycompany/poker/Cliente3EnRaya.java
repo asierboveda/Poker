@@ -22,7 +22,8 @@ public class Cliente3EnRaya {
      */
     public static void main(String[] args) {
         try {
-            Socket socket = new Socket("172.18.83.10", 4554);
+            Socket socket = new Socket("172.18.83.10", 34450);
+
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -34,7 +35,7 @@ public class Cliente3EnRaya {
                 String mensajeServidor = in.readLine();
                 if (mensajeServidor.equals("Esperando a que el otro jugador se una...")) {
                     System.out.println(mensajeServidor);
-                    continue;
+
                 } else if (mensajeServidor.equals("GANASTE")) {
                     System.out.println("¡Felicidades! ¡Ganaste!");
                     break;
@@ -56,8 +57,8 @@ public class Cliente3EnRaya {
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
+
         }
     }
-}
-    
 
+}
