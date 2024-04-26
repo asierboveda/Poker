@@ -22,7 +22,7 @@ public class Cliente3EnRaya {
      */
     public static void main(String[] args) {
         try {
-            Socket socket = new Socket("172.19.74.201", 1234);
+            Socket socket = new Socket("172.18.83.10", 4554);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 

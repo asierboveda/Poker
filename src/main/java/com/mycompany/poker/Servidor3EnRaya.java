@@ -17,7 +17,7 @@ import java.net.Socket;
  */
 public class Servidor3EnRaya {
 
-    private static final int PUERTO = 1234;
+    private static final int PUERTO = 4554;
     private static int turno = 1;
     private static char[][] tablero = new char[3][3];
 
