@@ -13,32 +13,33 @@ import java.util.Scanner;
 
 public class Cliente {
 
-        /**
-         * @param args the command line arguments
-         */
-        private Socket socket;
-        static private ObjectInputStream in; //no se si poner estatic aqui esta bien
-        static private ObjectOutputStream out;
-        private String username;
+    /**
+     * @param args the command line arguments
+     */
+    private Socket socket;
+    static private ObjectInputStream in; //no se si poner estatic aqui esta bien
+    static private ObjectOutputStream out;
+    private String username;
 
-        public Cliente(Socket socket,String username) {
-                try{
-                        this.socket = socket;
-                        this.in = new ObjectInputStream(socket.getInputStream());
-                        this.out = new ObjectOutputStream(socket.getOutputStream()) ;
-                        this.username = username;
-                }catch(IOException e){
-                        e.getStackTrace();
-                }
+    public Cliente(Socket socket, String username) {
+        try {
+            this.socket = socket;
+            this.in = new ObjectInputStream(socket.getInputStream());
+            this.out = new ObjectOutputStream(socket.getOutputStream());
+            this.username = username;
+        } catch (IOException e) {
+            e.getStackTrace();
         }
-        /*
+    }
+
+    /*
         public void sendMessage(){
                 try{
                         
                 }
         }
-*/
-        /*
+     */
+ /*
         public void listen(){
                 new Thread(() -> {
                         String msg;
@@ -52,40 +53,37 @@ public class Cliente {
                         }
                 }).start();
         }
-        */
-        public static void main(String[] args) throws IOException {
-            
-                // TODO code application logic hereç
-                Scanner scan = new Scanner(System.in);
-                String username =  scan.nextLine();
-                Socket socket  = new Socket("127.0.0.1",50019);
-                Cliente client = new Cliente(socket,username);
-                
-                try{
-                    //recibe bienvenida
-                
-                String bienvenida = (String) in.readObject();
-                System.out.println(bienvenida);
-                
-                //recibe mano
-                
-                ArrayList<Carta> mano = (ArrayList<Carta>) in.readObject();
-                for(int i = 0;i<7;i++){
-                    System.out.println(mano.get(i).toString());
-                }
-                
-                //empieza a jugar
-                /*while (true){
+     */
+    public static void main(String[] args) throws IOException {
+
+        // TODO code application logic hereç
+        Scanner scan = new Scanner(System.in);
+        String username = scan.nextLine();
+        Socket socket = new Socket("172.18.83.40", 50019);
+        Cliente client = new Cliente(socket, username);
+
+        try {
+            //recibe bienvenida
+
+            String bienvenida = (String) in.readObject();
+            System.out.println(bienvenida);
+
+            //recibe mano
+            ArrayList<Carta> mano = (ArrayList<Carta>) in.readObject();
+            for (int i = 0; i < 7; i++) {
+                System.out.println(mano.get(i).toString());
+            }
+
+            //empieza a jugar
+            /*while (true){
                     
                 }*/
-                //client.listen();
-                //client.sendMessage();
-                    
-                }catch(IOException | ClassNotFoundException ex){
-                    System.out.println("erorr");
-                }
-                
-                
+            //client.listen();
+            //client.sendMessage();
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println("erorr");
         }
-        
+
+    }
+
 }

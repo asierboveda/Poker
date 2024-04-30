@@ -8,10 +8,6 @@ package UnoLunes;
  *
  * @author asier
  */
-
-
-
-
 public class Carta {
 
     private final Color color;
