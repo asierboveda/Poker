@@ -67,7 +67,7 @@ public class Server {
             
             //loop del juego
             while (true ) {
-
+                
             }
              
 

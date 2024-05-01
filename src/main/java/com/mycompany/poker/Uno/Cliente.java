@@ -35,9 +35,9 @@ public class Cliente {
                 }
         }
         public void sendMessage(){
-                try{
-                        
-                }
+//                try{
+//                        
+//                }
         }
         public void listen(){
                 new Thread(() -> {
