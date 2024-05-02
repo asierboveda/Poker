@@ -62,11 +62,11 @@ public class HandlerCliente implements Runnable {
                     String instruccionesComplementarias = null;
                     ArrayList<Carta> robar = new ArrayList<>();
                     //nos puede llegar un null, si al anterior le han saltado 
-                    if (cartaArriba != null) {
+                    if (cartaArriba.getValor() != null) {
                         switch (cartaArriba.getValor()) {
                             case SALTO:
                                 instruccionesComplementarias = "Te han saltado el turno. Teclea el 0, obligatoriamente";
-                                Server.setCartaArriba(new Carta(cartaArriba.getColor(),null));//para que el siguiente jugador tenga turno
+                                Server.setCartaArriba(new Carta(cartaArriba.getColor(), null));//para que el siguiente jugador tenga turno
                                 break;
                             case MAS_CUATRO:
                                 instruccionesComplementarias = "Te debes chupar 4 cartas";
@@ -80,12 +80,13 @@ public class HandlerCliente implements Runnable {
                                 robar.add(Server.baraja.robarCarta());
                                 robar.add(Server.baraja.robarCarta());
                                 break;
+
                             default:
                                 break;
                         }
                     }
 
-                    //Momentos excpecionales, en los que nos han lllegado cartas Negras o chúpates
+                    //Momentos excpecionales, en los que nos han lllegado chúpates
                     out.writeObject(instruccionesComplementarias);
                     if (!robar.isEmpty()) {
                         for (Carta c : robar) {
@@ -99,13 +100,17 @@ public class HandlerCliente implements Runnable {
                     out.writeObject(instrucciones);
 
                     //recibimos la carta del jugador y, si no ha pasado, la ponemos hacia arriba
-                    
                     int numeroCarta = in.readInt();
-                    
-                    
+
                     if (numeroCarta != 0) {
-                        Carta cartaElegida = mano.remove(numeroCarta - 1);
-                        Server.setCartaArriba(cartaElegida);
+                        if (mano.get(numeroCarta - 1).getValor().equals(Valor.CAMBIO_COLOR)) {
+                            Color cambioColor = (Color) in.readObject();
+                            Server.setCartaArriba(new Carta(cambioColor, null));
+                        } else {
+                            Carta cartaElegida = mano.remove(numeroCarta - 1);
+                            Server.setCartaArriba(cartaElegida);
+                        }
+
                     }
 
                     //Comprobación de si hemos ganado
@@ -130,7 +135,7 @@ public class HandlerCliente implements Runnable {
                 }
 
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | ClassNotFoundException e) {
             System.out.println("Exception: " + e);
             e.printStackTrace();
         }

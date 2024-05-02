@@ -26,7 +26,9 @@ public class Cliente {
     public static void main(String[] args) {
 
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT); ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
-
+            
+            Scanner scanner = new Scanner(System.in);
+            
             String mensaje = (String) in.readObject();
             System.out.println(mensaje);
 
@@ -61,12 +63,24 @@ public class Cliente {
                 }
                 System.out.print("Elija el número de la carta: ");                
                 
-                Scanner scanner = new Scanner(System.in);
-                int numeroCarta = scanner.nextInt();
+                int numeroCarta = Integer.parseInt(scanner.nextLine());
+                
                 out.writeInt(numeroCarta);
-                      
+                
                 if (numeroCarta != 0) {
-                    mano.remove(numeroCarta - 1);//para que se vaya eliminando de la mano
+                    if(mano.get(numeroCarta-1).getValor().equals(Valor.CAMBIO_COLOR)){
+                        System.out.print("Elige el color a cambiar: ");
+                        String colorcambioStr = scanner.next(); 
+                        for(Color c : Color.values()){
+                            
+                            if(colorcambioStr.equals(c.toString())){
+                                out.writeObject(c);
+                                
+                            }
+                        }
+                        
+                    }
+                    mano.remove(numeroCarta - 1);//para que se vayan eliminando las cartas tiradas de la mano
                 }
                 out.flush();
 
