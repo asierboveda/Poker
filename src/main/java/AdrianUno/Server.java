@@ -67,12 +67,18 @@ public class Server {
     }
 
     public static synchronized void avanzarTurno() {
-        turno = (turno + sentido) % 4;
-        if(turno == -1){
+        if (sentido == 1) {
+            turno = (turno + 1) % 4;
+        } else if (sentido == -1) {
+            if (turno == 0) {
                 turno = 3;
+            } else {
+                turno = (turno - 1) % 4;
+            }
         }
     }
-    public static synchronized void cambioSentido(){
-            sentido = sentido*(-1);
+
+    public static synchronized void cambioSentido() {
+        sentido = sentido * (-1);
     }
 }

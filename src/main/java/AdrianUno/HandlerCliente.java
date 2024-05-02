@@ -122,6 +122,7 @@ public class HandlerCliente implements Runnable {
                     //Comprobación de si hemos ganado
                     if (mano.isEmpty()) {
                         out.writeObject("he ganado");
+                        socket.close();
                         for (HandlerCliente handler : listaHandlers) {
                             if (handler != this) {
                                 handler.out.writeObject("El jugador " + (id + 1) + " ha ganado.");
