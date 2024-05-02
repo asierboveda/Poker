@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * @author asier
  */
 public class ClientHandler implements Runnable{
-        public static ArrayList<ClientHandler> clientHandler  = new ArrayList<>();
+        public static  ArrayList<ClientHandler> clientHandler  = new ArrayList<>();
         
         private Socket socket;
         private ObjectInputStream in;
@@ -34,7 +34,11 @@ public class ClientHandler implements Runnable{
                         this.in = new ObjectInputStream(socket.getInputStream());             
                         this.out = new ObjectOutputStream(socket.getOutputStream());
                         this.username = bufferedReader.readLine();
-                        clientHandler.add(this);
+                        synchronized(clientHandler){
+                                clientHandler.add(this);
+
+                        }
+                        
                 }catch(IOException e){
                         e.getMessage();
                 }

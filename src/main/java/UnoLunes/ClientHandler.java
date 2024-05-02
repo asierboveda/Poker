@@ -83,11 +83,13 @@ public class ClientHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 String bienvenida = (String) in.readObject();
-                out.writeObject(bienvenida);
+                System.out.println(bienvenida);
 
                 if (in.readObject().equals(username)) {
                     ArrayList<Carta> mano = (ArrayList) in.readObject(); //Igual cambiar a dar carta una por una
-                    out.writeObject(mano); //le envi la mano al cliente
+                   for(Carta c: mano){
+                           System.out.println(c);//le envi la mano al cliente
+                }
                 }
                 
 

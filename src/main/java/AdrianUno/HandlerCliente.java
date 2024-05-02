@@ -103,6 +103,7 @@ public class HandlerCliente implements Runnable {
                     //recibimos la carta del jugador y, si no ha pasado, la ponemos hacia arriba
                     int numeroCarta = in.readInt();
                     Carta cartaElegida = null;
+                    
                     if (numeroCarta != 0) {
                         if (mano.get(numeroCarta - 1).getValor().equals(Valor.CAMBIO_COLOR)) {
                             Color cambioColor = (Color) in.readObject();
@@ -118,7 +119,6 @@ public class HandlerCliente implements Runnable {
                         }
 
                     }
-
                     //Comprobación de si hemos ganado
                     if (mano.isEmpty()) {
                         out.writeObject("he ganado");
