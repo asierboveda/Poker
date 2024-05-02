@@ -80,7 +80,8 @@ public class HandlerCliente implements Runnable {
                                 robar.add(Server.baraja.robarCarta());
                                 robar.add(Server.baraja.robarCarta());
                                 break;
-
+                            case CAMBIO_SENTIDO:
+                                Server.cambioSentido();
                             default:
                                 break;
                         }

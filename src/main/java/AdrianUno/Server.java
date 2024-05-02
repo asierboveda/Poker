@@ -22,6 +22,7 @@ public class Server {
     public static final Baraja baraja = new Baraja();
     private static Carta cartaArriba = baraja.robarCarta();
     private static int turno = 0;
+    public static int sentido = 1;
 
     public static void main(String[] args) {
         System.out.println("The Uno server is running...");
@@ -66,6 +67,9 @@ public class Server {
     }
 
     public static synchronized void avanzarTurno() {
-        turno = (turno + 1) % 4;
+        turno = (turno + sentido) % 4;
+    }
+    public static synchronized void cambioSentido(){
+            sentido = sentido*(-1);
     }
 }
