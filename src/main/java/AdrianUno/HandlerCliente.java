@@ -57,13 +57,17 @@ public class HandlerCliente implements Runnable {
             while (true) {
                 synchronized (Server.baraja) {
                     Carta cartaArriba = Server.getCartaArriba();
-                    String instrucciones = "Es su turno. Tiene que elegir una de sus cartas para tirar. La carta de arriba es: " + cartaArriba;
+                    String instrucciones = "Es su turno. Tiene que elegir una de sus cartas para tirar ó el 0 para pasar. La carta de arriba es: " + cartaArriba;
                     out.writeObject(instrucciones);
 
                     int numeroCarta = in.readInt();
-                    Carta cartaElegida = mano.remove(numeroCarta - 1);
-                    Server.setCartaArriba(cartaElegida);
-
+                    
+                    if(numeroCarta!=0){
+                        Carta cartaElegida = mano.remove(numeroCarta - 1);
+                        Server.setCartaArriba(cartaElegida);
+                    }
+                    
+                    
                     if (mano.isEmpty()) {
                         out.writeObject("he ganado");
                         for (HandlerCliente handler : listaHandlers) {
@@ -83,7 +87,7 @@ public class HandlerCliente implements Runnable {
                 while (Server.getTurno() != id) {
                     Thread.sleep(100);
                 }
-                
+
             }
         } catch (IOException | InterruptedException e) {
             System.out.println("Exception: " + e);

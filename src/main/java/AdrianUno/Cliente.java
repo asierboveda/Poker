@@ -41,10 +41,18 @@ public class Cliente {
             while (true) {
                 String instrucciones = (String) in.readObject();
                 System.out.println(instrucciones);
+                
+                System.out.println("Sus cartas son: ");
+                for(Carta c : mano){
+                    System.out.println(c);
+                }
 
                 Scanner scanner = new Scanner(System.in);
                 int numeroCarta = scanner.nextInt();
-                out.writeInt(numeroCarta);
+                out.writeInt(numeroCarta);  
+                if(numeroCarta!=0){
+                    mano.remove(numeroCarta-1);
+                }
                 out.flush();
 
                 String resultado = (String) in.readObject();

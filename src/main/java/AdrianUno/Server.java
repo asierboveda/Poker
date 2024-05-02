@@ -18,9 +18,10 @@ import java.util.concurrent.Executors;
  * @author alumno
  */
 public class Server {
+
     private static final int SERVER_PORT = 59001;
     public static final Baraja baraja = new Baraja();
-    private static Carta cartaArriba;
+    private static Carta cartaArriba = baraja.robarCarta();
     private static int turno = 0;
 
     public static void main(String[] args) {
