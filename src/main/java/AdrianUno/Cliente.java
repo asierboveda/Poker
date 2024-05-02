@@ -72,7 +72,6 @@ public class Cliente {
                         System.out.print("Elige el color(en mayusculas) a cambiar: ");
                         String colorcambioStr = scanner.next();
                         for(Color c : Color.values()){
-                            
                             if(colorcambioStr.equals(c.toString())){
                                 out.writeObject(c);
                                 
@@ -89,7 +88,7 @@ public class Cliente {
                                 
                             }
                         }
-                    mano.remove(numeroCarta - 1);//para que se vayan eliminando las cartas tiradas de la mano
+                
                 }
                 out.flush();
 
@@ -100,6 +99,10 @@ public class Cliente {
                     break;
                 }
                 }
+            
+            
+            mano.remove(numeroCarta - 1);//para que se vayan eliminando las cartas tiradas de la mano
+            
             }
                     
         } catch (IOException | ClassNotFoundException e) {

@@ -114,8 +114,10 @@ public class HandlerCliente implements Runnable {
                              cartaElegida = new Carta(cambioColor,Valor.MAS_CUATRO);
                             Server.setCartaArriba(cartaElegida);
                         } else {
-                             cartaElegida = mano.remove(numeroCarta - 1);
-                            Server.setCartaArriba(cartaElegida);
+                            cartaElegida = mano.remove(numeroCarta - 1);
+                            if(cartaElegida.cartaValida(cartaArriba)){
+                                Server.setCartaArriba(cartaElegida);
+                            }
                         }
 
                     }
@@ -135,9 +137,7 @@ public class HandlerCliente implements Runnable {
                                         case SALTO:
                                                 Server.avanzarTurno();
                                                 break;
-                                        case CAMBIO_SENTIDO:
-                                                Server.cambioSentido();
-                                                break;
+                                        
                                         default:
                                                 break;
 

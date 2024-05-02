@@ -37,7 +37,7 @@ public class Server {
         }
         public static void main(String[] args) throws IOException {
                 // TODO code application logic here
-                ServerSocket sc =  new ServerSocket(1234);
+                ServerSocket sc =  new ServerSocket(5555);
                 Server server = new Server(sc);
                 server.comenzarJuego();
         }

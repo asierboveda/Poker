@@ -43,4 +43,5 @@ public class Carta implements Serializable {
             return color.equals(c.color) || valor.equals(c.valor);
         }
     }
+    
 }

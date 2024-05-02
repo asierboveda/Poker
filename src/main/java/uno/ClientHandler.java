@@ -166,16 +166,16 @@ public class ClientHandler implements Runnable {
                                         }
                                         if(cartaValida !=null){
                                                 switch(cartaValida.getValor()){
-                                                        case Valor.CAMBIO_SENTIDO:
+                                                        case CAMBIO_SENTIDO:
                                                                 cambioSentido();
                                                                 break;
-                                                        case Valor.SALTO:
+                                                        case SALTO:
                                                                 cambioTurno();
                                                                 break;
-                                                        case Valor.MAS_CUATRO:
+                                                        case MAS_CUATRO:
                                                                 chupate(4);
                                                                 break;
-                                                        case Valor.MAS_DOS:
+                                                        case MAS_DOS:
                                                                 chupate(2);
                                                                 break;
                                                 }
