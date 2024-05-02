@@ -66,7 +66,7 @@ public class HandlerCliente implements Runnable {
                         switch (cartaArriba.getValor()) {
                             case SALTO:
                                 instruccionesComplementarias = "Te han saltado el turno. Teclea el 0, obligatoriamente";
-                                Server.setCartaArriba(null);//para que el siguiente jugador tenga turno
+                                Server.setCartaArriba(new Carta(cartaArriba.getColor(),null));//para que el siguiente jugador tenga turno
                                 break;
                             case MAS_CUATRO:
                                 instruccionesComplementarias = "Te debes chupar 4 cartas";
@@ -99,7 +99,10 @@ public class HandlerCliente implements Runnable {
                     out.writeObject(instrucciones);
 
                     //recibimos la carta del jugador y, si no ha pasado, la ponemos hacia arriba
+                    
                     int numeroCarta = in.readInt();
+                    
+                    
                     if (numeroCarta != 0) {
                         Carta cartaElegida = mano.remove(numeroCarta - 1);
                         Server.setCartaArriba(cartaElegida);

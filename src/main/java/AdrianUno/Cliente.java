@@ -64,7 +64,7 @@ public class Cliente {
                 Scanner scanner = new Scanner(System.in);
                 int numeroCarta = scanner.nextInt();
                 out.writeInt(numeroCarta);
-                
+                      
                 if (numeroCarta != 0) {
                     mano.remove(numeroCarta - 1);//para que se vaya eliminando de la mano
                 }
