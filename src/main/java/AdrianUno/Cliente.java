@@ -25,33 +25,32 @@ public class Cliente {
 
     public static void main(String[] args) {
 
-        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
+        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT); ObjectInputStream in = new ObjectInputStream(socket.getInputStream()); ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
 
             String mensaje = (String) in.readObject();
             System.out.println(mensaje);
 
             System.out.println("Sus cartas son:");
             ArrayList<Carta> mano = (ArrayList<Carta>) in.readObject();
-            for (Carta carta : mano) {
-                System.out.println(carta);
+            for (Carta c : mano) {
+                System.out.println(c);
             }
 
             while (true) {
                 String instrucciones = (String) in.readObject();
                 System.out.println(instrucciones);
-                
+
                 System.out.println("Sus cartas son: ");
-                for(Carta c : mano){
-                    System.out.println(c);
+                for (int i = 0; i < mano.size(); i++) {
+                    System.out.println(mano.get(i) + "(" + i + ")");
                 }
+                System.out.print("Elija el número de la carta: ");                
 
                 Scanner scanner = new Scanner(System.in);
                 int numeroCarta = scanner.nextInt();
-                out.writeInt(numeroCarta);  
-                if(numeroCarta!=0){
-                    mano.remove(numeroCarta-1);
+                out.writeInt(numeroCarta);
+                if (numeroCarta != 0) {
+                    mano.remove(numeroCarta - 1);
                 }
                 out.flush();
 
@@ -64,7 +63,6 @@ public class Cliente {
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-        
 
         }
 
