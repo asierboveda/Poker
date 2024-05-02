@@ -64,10 +64,10 @@ public class HandlerCliente implements Runnable {
                     //nos puede llegar un null, si al anterior le han saltado 
                     if (cartaArriba.getValor() != null) {
                         switch (cartaArriba.getValor()) {
-                            case SALTO:
-                                instruccionesComplementarias = "Te han saltado el turno. Teclea el 0, obligatoriamente";
-                                Server.setCartaArriba(new Carta(cartaArriba.getColor(), null));//para que el siguiente jugador tenga turno
-                                break;
+//                            case SALTO:
+//                                instruccionesComplementarias = "Te han saltado el turno. Teclea el 0, obligatoriamente";
+//                                Server.setCartaArriba(new Carta(cartaArriba.getColor(),Valor.SALTO));//para que el siguiente jugador tenga turno
+//                                break;
                             case MAS_CUATRO:
                                 instruccionesComplementarias = "Te debes chupar 4 cartas";
                                 robar.add(Server.baraja.robarCarta());
@@ -80,10 +80,10 @@ public class HandlerCliente implements Runnable {
                                 robar.add(Server.baraja.robarCarta());
                                 robar.add(Server.baraja.robarCarta());
                                 break;
-                            case CAMBIO_SENTIDO:
-                                Server.cambioSentido();
-                            default:
-                                break;
+//                            case CAMBIO_SENTIDO:
+//                                Server.cambioSentido();
+                           default:
+                               break;
                         }
                     }
 
@@ -106,7 +106,12 @@ public class HandlerCliente implements Runnable {
                     if (numeroCarta != 0) {
                         if (mano.get(numeroCarta - 1).getValor().equals(Valor.CAMBIO_COLOR)) {
                             Color cambioColor = (Color) in.readObject();
-                            Server.setCartaArriba(new Carta(cambioColor, null));
+                            Carta cartaElegida = new Carta(cambioColor,Valor.CAMBIO_COLOR);
+                            Server.setCartaArriba(cartaElegida);
+                        }else if(mano.get(numeroCarta - 1).getValor().equals(Valor.MAS_CUATRO)) {
+                            Color cambioColor = (Color) in.readObject();
+                            Carta cartaElegida = new Carta(cambioColor,Valor.MAS_CUATRO);
+                            Server.setCartaArriba(cartaElegida);
                         } else {
                             Carta cartaElegida = mano.remove(numeroCarta - 1);
                             Server.setCartaArriba(cartaElegida);
@@ -124,6 +129,17 @@ public class HandlerCliente implements Runnable {
                         }
                         break;
                     } else {
+                        switch(cartaArriba.getValor()){
+                                case SALTO:
+                                        Server.avanzarTurno();
+                                        break;
+                                case CAMBIO_SENTIDO:
+                                        Server.cambioSentido();
+                                        break;
+                                default:
+                                        break;
+                                
+                        }
                         Server.avanzarTurno();
                         out.writeObject("no he ganado");
                     }

@@ -69,8 +69,8 @@ public class Cliente {
                 
                 if (numeroCarta != 0) {
                     if(mano.get(numeroCarta-1).getValor().equals(Valor.CAMBIO_COLOR)){
-                        System.out.print("Elige el color a cambiar: ");
-                        String colorcambioStr = scanner.next(); 
+                        System.out.print("Elige el color(en mayusculas) a cambiar: ");
+                        String colorcambioStr = scanner.next();
                         for(Color c : Color.values()){
                             
                             if(colorcambioStr.equals(c.toString())){
@@ -79,7 +79,16 @@ public class Cliente {
                             }
                         }
                         
-                    }
+                    }else if(mano.get(numeroCarta-1).getValor().equals(Valor.MAS_CUATRO)){
+                        System.out.print("Elige el color(en mayusculas) a cambiar: ");
+                        String colorcambioStr = scanner.next();
+                        for(Color c : Color.values()){
+                            
+                            if(colorcambioStr.equals(c.toString())){
+                                out.writeObject(c);
+                                
+                            }
+                        }
                     mano.remove(numeroCarta - 1);//para que se vayan eliminando las cartas tiradas de la mano
                 }
                 out.flush();
@@ -90,7 +99,9 @@ public class Cliente {
                 if (resultado.equals("he ganado")) {
                     break;
                 }
+                }
             }
+                    
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
 
