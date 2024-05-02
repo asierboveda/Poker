@@ -57,17 +57,55 @@ public class HandlerCliente implements Runnable {
             while (true) {
                 synchronized (Server.baraja) {
                     Carta cartaArriba = Server.getCartaArriba();
+
+                    //Gestionar los casos en los que la cartaArriba que nos llega es extraña (chúpates, saltos...)
+                    String instruccionesComplementarias = null;
+                    ArrayList<Carta> robar = new ArrayList<>();
+                    //nos puede llegar un null, si al anterior le han saltado 
+                    if (cartaArriba != null) {
+                        switch (cartaArriba.getValor()) {
+                            case SALTO:
+                                instruccionesComplementarias = "Te han saltado el turno. Teclea el 0, obligatoriamente";
+                                Server.setCartaArriba(null);//para que el siguiente jugador tenga turno
+                                break;
+                            case MAS_CUATRO:
+                                instruccionesComplementarias = "Te debes chupar 4 cartas";
+                                robar.add(Server.baraja.robarCarta());
+                                robar.add(Server.baraja.robarCarta());
+                                robar.add(Server.baraja.robarCarta());
+                                robar.add(Server.baraja.robarCarta());
+                                break;
+                            case MAS_DOS:
+                                instruccionesComplementarias = "Te debes chupar 2 cartas";
+                                robar.add(Server.baraja.robarCarta());
+                                robar.add(Server.baraja.robarCarta());
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    //Momentos excpecionales, en los que nos han lllegado cartas Negras o chúpates
+                    out.writeObject(instruccionesComplementarias);
+                    if (!robar.isEmpty()) {
+                        for (Carta c : robar) {
+                            out.writeObject(c);
+                            mano.add(c); //para que el handler tmbn la tenga en cuenta
+                        }
+                    }
+
+                    //Inicio turno
                     String instrucciones = "Es su turno. Tiene que elegir una de sus cartas para tirar ó el 0 para pasar. La carta de arriba es: " + cartaArriba;
                     out.writeObject(instrucciones);
 
+                    //recibimos la carta del jugador y, si no ha pasado, la ponemos hacia arriba
                     int numeroCarta = in.readInt();
-                    
-                    if(numeroCarta!=0){
+                    if (numeroCarta != 0) {
                         Carta cartaElegida = mano.remove(numeroCarta - 1);
                         Server.setCartaArriba(cartaElegida);
                     }
-                    
-                    
+
+                    //Comprobación de si hemos ganado
                     if (mano.isEmpty()) {
                         out.writeObject("he ganado");
                         for (HandlerCliente handler : listaHandlers) {

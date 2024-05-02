@@ -37,20 +37,36 @@ public class Cliente {
             }
 
             while (true) {
+                System.out.println("\n");
+                String instruccionesComplementarias = (String) in.readObject();
+                if(instruccionesComplementarias!=null){
+                    System.out.println(instruccionesComplementarias);
+                    if(instruccionesComplementarias.startsWith("Te debes chupar 4")){
+                        mano.add((Carta)in.readObject());
+                        mano.add((Carta)in.readObject());
+                        mano.add((Carta)in.readObject());
+                        mano.add((Carta)in.readObject());
+                    }else if(instruccionesComplementarias.startsWith("Te debes chupar 2")){
+                        mano.add((Carta)in.readObject());
+                        mano.add((Carta)in.readObject());
+                    }
+                }
+                
                 String instrucciones = (String) in.readObject();
-                System.out.println(instrucciones);
+                System.out.println(instrucciones); 
 
                 System.out.println("Sus cartas son: ");
                 for (int i = 0; i < mano.size(); i++) {
                     System.out.println(mano.get(i) + "(" + (i+1) + ")");
                 }
                 System.out.print("Elija el número de la carta: ");                
-
+                
                 Scanner scanner = new Scanner(System.in);
                 int numeroCarta = scanner.nextInt();
                 out.writeInt(numeroCarta);
+                
                 if (numeroCarta != 0) {
-                    mano.remove(numeroCarta - 1);
+                    mano.remove(numeroCarta - 1);//para que se vaya eliminando de la mano
                 }
                 out.flush();
 
