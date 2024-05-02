@@ -42,7 +42,7 @@ public class Cliente {
 
                 System.out.println("Sus cartas son: ");
                 for (int i = 0; i < mano.size(); i++) {
-                    System.out.println(mano.get(i) + "(" + i + ")");
+                    System.out.println(mano.get(i) + "(" + (i+1) + ")");
                 }
                 System.out.print("Elija el número de la carta: ");                
 
