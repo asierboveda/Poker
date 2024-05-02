@@ -102,18 +102,18 @@ public class HandlerCliente implements Runnable {
 
                     //recibimos la carta del jugador y, si no ha pasado, la ponemos hacia arriba
                     int numeroCarta = in.readInt();
-
+                    Carta cartaElegida = null;
                     if (numeroCarta != 0) {
                         if (mano.get(numeroCarta - 1).getValor().equals(Valor.CAMBIO_COLOR)) {
                             Color cambioColor = (Color) in.readObject();
-                            Carta cartaElegida = new Carta(cambioColor,Valor.CAMBIO_COLOR);
+                             cartaElegida = new Carta(cambioColor,Valor.CAMBIO_COLOR);
                             Server.setCartaArriba(cartaElegida);
                         }else if(mano.get(numeroCarta - 1).getValor().equals(Valor.MAS_CUATRO)) {
                             Color cambioColor = (Color) in.readObject();
-                            Carta cartaElegida = new Carta(cambioColor,Valor.MAS_CUATRO);
+                             cartaElegida = new Carta(cambioColor,Valor.MAS_CUATRO);
                             Server.setCartaArriba(cartaElegida);
                         } else {
-                            Carta cartaElegida = mano.remove(numeroCarta - 1);
+                             cartaElegida = mano.remove(numeroCarta - 1);
                             Server.setCartaArriba(cartaElegida);
                         }
 
@@ -129,16 +129,18 @@ public class HandlerCliente implements Runnable {
                         }
                         break;
                     } else {
-                        switch(cartaArriba.getValor()){
-                                case SALTO:
-                                        Server.avanzarTurno();
-                                        break;
-                                case CAMBIO_SENTIDO:
-                                        Server.cambioSentido();
-                                        break;
-                                default:
-                                        break;
-                                
+                        if(cartaElegida != null){
+                                switch(cartaElegida.getValor()){
+                                        case SALTO:
+                                                Server.avanzarTurno();
+                                                break;
+                                        case CAMBIO_SENTIDO:
+                                                Server.cambioSentido();
+                                                break;
+                                        default:
+                                                break;
+
+                                }
                         }
                         Server.avanzarTurno();
                         out.writeObject("no he ganado");
