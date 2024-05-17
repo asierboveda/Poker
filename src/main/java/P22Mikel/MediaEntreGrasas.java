@@ -42,16 +42,16 @@ public class MediaEntreGrasas {
                     String totGrasas = linea[4].replaceAll("[,\"]", "").trim(); // Elimina comas y comillas
                     String GrasasSatu = linea[5].replaceAll("[,\"]", "").trim();
                     String GrasasTrans = linea[6].replaceAll("[,\"]", "").trim();
-                    String[] grasas = {totGrasas, GrasasSatu, GrasasTrans};
+                    //compronación cabecera o valor nulo
                     if (!totGrasas.isEmpty() && !GrasasSatu.isEmpty() && !GrasasTrans.isEmpty()
                             && !totGrasas.equals("\"Total Fat(g)\"")
                             && !GrasasSatu.equals("\"Saturated Fat(g)\"")
                             && !GrasasTrans.equals("\"Trans Fat(g)\"")) {
+                        //try para controlar los errores de tener un String q no se pueda hacer entero (" ")
                         try {
-                            int totGrasasInt = Integer.parseInt(totGrasas);
-                            int GrasasSatuInt = Integer.parseInt(GrasasSatu);
-                            int GrasasTransInt = Integer.parseInt(GrasasTrans);
-                            if (totGrasasInt > 0 || GrasasSatuInt > 0 || GrasasTransInt > 0) {
+                            int totGrasasInt = Integer.parseInt(totGrasas);int GrasasSatuInt = Integer.parseInt(GrasasSatu);int GrasasTransInt = Integer.parseInt(GrasasTrans);
+                                             
+                            if (totGrasasInt > 0 && (GrasasSatuInt > 0 || GrasasTransInt > 0)) {
                                 int mediaGrasasInt = (totGrasasInt + GrasasSatuInt + GrasasTransInt) / 3;
                                 mediaGrasas.set(mediaGrasasInt);
                                 System.out.println("Clave: " + restauranteStr);
