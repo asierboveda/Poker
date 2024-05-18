@@ -23,6 +23,13 @@ public class MaxColesterol {
 
         private Text restaurante = new Text();
         private Text productoColesterol = new Text();
+        private String userRestaurante;
+
+        @Override
+        protected void setup(Context context) {
+            userRestaurante = context.getConfiguration().get("restaurante");
+            System.out.println("aqui: " + userRestaurante);
+        }
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -31,6 +38,10 @@ public class MaxColesterol {
 
                 if (linea.length > 7) {
                     String restauranteStr = linea[0];
+                    // Filter based on user input
+                    if (!restauranteStr.startsWith(userRestaurante)) {
+                        return;
+                    }
                     restaurante.set(restauranteStr);
 
                     String productoStr = linea[1];
@@ -60,12 +71,31 @@ public class MaxColesterol {
             for (Text val : values) {
                 String[] productoColesterol = val.toString().split(",", -1);
                 String producto = productoColesterol[0];
-                int colesterol = Integer.parseInt(productoColesterol[1]);
-
-                if (colesterol > maxColesterol) {
-                    maxColesterol = colesterol;
-                    maxProducto = producto;
+                String colesterolStr = productoColesterol[1];
+                System.out.println("produuctoColesterol=" + producto + "," + colesterolStr);
+                if (colesterolStr.contains("<")) {
+                    colesterolStr = colesterolStr.replace("<", "");
                 }
+                if (colesterolStr.contains(" ")) {
+                    colesterolStr = colesterolStr.replace(" ", "");
+                }
+
+                try {
+                    if (!colesterolStr.isEmpty() && !colesterolStr.equals(" ") && !colesterolStr.equals("")) {
+                        int colesterol = Integer.parseInt(colesterolStr);
+
+                        if (colesterol > maxColesterol) {
+                            System.out.println(colesterol);
+                            maxColesterol = colesterol;
+                            maxProducto = producto;
+                        }
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.err.println("CAPTURADA " + e.getMessage());
+                    e.printStackTrace(System.err);
+                }
+
             }
 
             result.set(maxProducto + "," + maxColesterol);
@@ -75,8 +105,9 @@ public class MaxColesterol {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("McDonald’s\nBurger King\nWendy’s\nKFC\nTaco Bell\nPizza Hut\nIngrese el nombre del restaurante: ");
-        String restaurante = scanner.next();
+
+        System.out.println("Ingrese el nombre del restaurante (McDonald, Burger, Wendy, KFC, Taco, Otro):");
+        String restaurante = scanner.nextLine();
 
         UserGroupInformation ugi = UserGroupInformation.createRemoteUser("a_83036");
         try {
