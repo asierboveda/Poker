@@ -18,13 +18,16 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.security.UserGroupInformation;
 
 public class MaxColesterol {
-
+    
+    //Mapeo --> reducir a (Restaurante, nombreProducto+ColesterolProducto) 
+    //se tendrán tantas salidas como productos VÁLIDOS presente el restaurante seleccionado
+    //VÁLIDO = registro con longitud>7, colesterol con Valor que NO sea vacío ni un espacio en blanco
     public static class MapClass extends Mapper<LongWritable, Text, Text, Text> {
 
         private Text restaurante = new Text();
         private Text productoColesterol = new Text();
         private String userRestaurante;
-
+        //se registra en la variable userRestaurante, el valor enviado desde el MAIN
         @Override
         protected void setup(Context context) {
             userRestaurante = context.getConfiguration().get("restaurante");
@@ -34,20 +37,24 @@ public class MaxColesterol {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             try {
+                //se divide en campos, teniendo en cuenta los valores que ya presentan comas de por sí
                 String[] linea = value.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
+                
                 if (linea.length > 7) {
                     String restauranteStr = linea[0];
-                    // Filter based on user input
+                    //se restringe a los registros que sean del restaurante seleccionado
                     if (!restauranteStr.startsWith(userRestaurante)) {
                         return;
                     }
                     restaurante.set(restauranteStr);
-
-                    String productoStr = linea[1];
+                    
+                    //construir el valor de la salida:
+                    
+                    //quitar comillas en los valores de colesterol: "47" y las comas en los productos que tienen comas de por sí
+                    String productoStr = linea[1].replaceAll("[,\"]", "").trim();
                     String colesterolStr = linea[7].replaceAll("[,\"]", "").trim();
 
-                    if (!colesterolStr.isEmpty() && !colesterolStr.equals("Cholesterol")) {
+                    if (!colesterolStr.isEmpty() && !colesterolStr.equals("Cholesterol") && !colesterolStr.equals(" ")) { //evitar valores vacíos y la cabecera
                         productoColesterol.set(productoStr + "," + colesterolStr);
                         context.write(restaurante, productoColesterol);
                     }
@@ -58,34 +65,37 @@ public class MaxColesterol {
             }
         }
     }
-
+    
+    //Reductor --> conseguimos como salida 1 único registro: (Restaurante, producto+Colesterol)
     public static class ReduceClass extends Reducer<Text, Text, Text, Text> {
-
+        
         private Text result = new Text();
-
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
             String maxProducto = "";
-            int maxColesterol = Integer.MIN_VALUE;
-
+            int maxColesterol = Integer.MIN_VALUE;//comparador inicial
+            //se analiza el colesterol de cada producto
             for (Text val : values) {
+                
                 String[] productoColesterol = val.toString().split(",", -1);
-                String producto = productoColesterol[0];
-                String colesterolStr = productoColesterol[1];
-                System.out.println("produuctoColesterol=" + producto + "," + colesterolStr);
+                String producto = productoColesterol[0].replaceAll("[,\"]", "").trim();
+                String colesterolStr = productoColesterol[1].replaceAll("[,\"]", "").trim();
+                System.out.println("productoColesterol=" + producto + "," + colesterolStr);//sacar por pantalla cada valor de los pares clave-valor del restaurante
+                
+                //limpiar la clave conseguida
                 if (colesterolStr.contains("<")) {
                     colesterolStr = colesterolStr.replace("<", "");
                 }
                 if (colesterolStr.contains(" ")) {
                     colesterolStr = colesterolStr.replace(" ", "");
                 }
-
+                
+                //Fase de conseguir el producto con mayor colesterol
                 try {
-                    if (!colesterolStr.isEmpty() && !colesterolStr.equals(" ") && !colesterolStr.equals("")) {
+                    //evitar valores nulos
+                    if (!colesterolStr.isEmpty() && !colesterolStr.startsWith(" ") && !colesterolStr.equals("")) {
                         int colesterol = Integer.parseInt(colesterolStr);
-
                         if (colesterol > maxColesterol) {
-                            System.out.println(colesterol);
                             maxColesterol = colesterol;
                             maxProducto = producto;
                         }
@@ -97,16 +107,17 @@ public class MaxColesterol {
                 }
 
             }
-
             result.set(maxProducto + "," + maxColesterol);
             context.write(key, result);
         }
     }
-
+    
+    
     public static void main(String[] args) {
+        //antes del main, guardamosn el valor del restaurante elegido
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese el nombre del restaurante (McDonald, Burger, Wendy, KFC, Taco, Otro):");
+        System.out.println("Ingrese el nombre del restaurante (McDonald, Burger, Wendy, KFC, Taco, Pizza Hut):");
         String restaurante = scanner.nextLine();
 
         UserGroupInformation ugi = UserGroupInformation.createRemoteUser("a_83036");
@@ -115,7 +126,7 @@ public class MaxColesterol {
                 public Void run() throws Exception {
                     Configuration conf = new Configuration();
                     conf.set("fs.defaultFS", "hdfs://192.168.10.1:9000");
-                    conf.set("restaurante", restaurante);
+                    conf.set("restaurante", restaurante);//se guarda
                     Job job = Job.getInstance(conf, "MaxColesterol");
 
                     job.setJarByClass(MaxColesterol.class);

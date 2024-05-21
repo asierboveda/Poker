@@ -17,6 +17,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 
 public class MediaCalorias {
 
+    //Mapeador --> la salida será: (Restaurante, caloriaProducto) 
     private static class MapClass extends Mapper<LongWritable, Text, Text, LongWritable> {
 
         private Text restaurante = new Text();
@@ -30,7 +31,6 @@ public class MediaCalorias {
 
                 if (linea.length > 2) {
                     String restauranteStr = linea[0];
-                    
                     //hay 2 registros de Mcdonald's que tienen Calorie Swetener como Company
                     if (restauranteStr.startsWith("Calorie Sweetener")) {
                         restaurante.set("McDonald’s");
@@ -39,17 +39,19 @@ public class MediaCalorias {
 
                     }
 
-                    String caloriasStr = linea[2].replaceAll("[,\"]", "").trim(); // Elimina comas y comillas
-
-                    if (!caloriasStr.isEmpty() && !caloriasStr.equals("Calories")) {
+                    //Fase de conseguir las calorias del producto
+                    String caloriasStr = linea[2].replaceAll("[,\\\"\\s]", "").trim(); // Elimina comas y comillas
+                    caloriasStr=caloriasStr.replaceAll(" ", "");
+                    if (!caloriasStr.isEmpty() && !caloriasStr.equals("Calories")) {//evitar la cabecera y los valores de caloria nulos
                         try {
                             int caloriasInt = Integer.parseInt(caloriasStr);
+                            System.out.println("Clave="+restauranteStr+" Valor="+caloriasInt);
                             calorias.set(caloriasInt);
-
                             context.write(restaurante, calorias);
                         } catch (NumberFormatException e) {
-                            // Si no se puede convertir a número, escribir 0 calorías
-                            context.write(restaurante, new LongWritable(0));
+                            System.err.println("EXCEPCION: " + e);
+                            System.err.println("CAPTURADA " + e.getMessage());
+                            e.printStackTrace(System.err);
                         }
                     }
                 }
@@ -61,6 +63,7 @@ public class MediaCalorias {
         }
     }
 
+    //Particionador-->queremos diseccionar el trabajo en 6 subtareas independientes, las cuales tendrán los pares (clave,valor)=(restaurante,mediaGrasas)
     private static class PartitionerClass extends Partitioner<Text, LongWritable> {
 
         @Override
@@ -83,6 +86,7 @@ public class MediaCalorias {
         }
     }
 
+    //Reductor --> se va a conseguir 1 par clave-valor (en cada subtarea) (restaurante, MEDIA de calorias)
     private static class ReduceClass extends Reducer<Text, LongWritable, Text, LongWritable> {
 
         private Text restaurante = new Text();
@@ -94,17 +98,15 @@ public class MediaCalorias {
             long sum = 0L;
             long cont = 0L;
 
+            //Construir la media de las calorias que presentan los productos en la casilla VALOR de cada par
             for (LongWritable caloriaProducto : values) {
                 sum += caloriaProducto.get();
                 cont++;
             }
 
-            if (cont != 0) {
-                sumcalorias.set(sum / cont);
-                context.write(key, sumcalorias);
-            } else {
-                context.write(key, new LongWritable(0));  // Manejo en caso de que no haya valores
-            }
+            sumcalorias.set(sum / cont);
+            context.write(key, sumcalorias);
+
         }
     }
 
